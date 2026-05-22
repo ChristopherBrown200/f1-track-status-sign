@@ -1,6 +1,9 @@
 """
 F1 Sign Middleware Raspberry Pi Server
+By: Christopher Brown (https://github.com/ChristopherBrown200)
+
 Connected to the F1 live timing stream via FastF1: https://github.com/theOehrly/Fast-F1
+
 Extracts track status, checks whether a session is currently active,
 detects session end and winner color, and serves it to an ESP32.
 """

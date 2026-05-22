@@ -1,4 +1,9 @@
 /*
+F1 Track Status Sign ESP32 Code
+By: Christopher Brown (https://github.com/ChristopherBrown200)
+
+Reads from ESP32 and displasy the current track status
+
 Flag effects:
   Connecting          White Ribbon
   Green flag          Solid green
@@ -31,7 +36,7 @@ Libraries needed (install via Arduino Library Manager):
 // LED State Array
 CRGB leds[NUM_LEDS];
 
-// Colours Constants
+// Colors Constants
 #define COL_GREEN     CRGB(0, 210, 0)
 #define COL_GREEN_DIM CRGB(0, 60, 0)
 #define COL_YELLOW    CRGB(255, 200, 0)
@@ -60,7 +65,7 @@ unsigned long lastPoll  = 0;
 int  failedPollsCount   = 0;
 
 // Track Status
-int  currentStatus  = 4;
+int  currentStatus  = 0;
 bool showingWinner  = false;
 CRGB winnerColor1   = CRGB::White;
 CRGB winnerColor2   = CRGB::Black;
@@ -136,14 +141,14 @@ void fetchStatus() {
       serverUnreachable = false;
 
       // If Color Present Start Winner Animation
-      if (!doc["winner_colour"].isNull()) {
-        const char* hex = doc["winner_colour"].as<const char*>();
-        CRGB colour = hexToRgb(hex);
+      if (!doc["winner_color"].isNull()) {
+        const char* hex = doc["winner_color"].as<const char*>();
+        CRGB color = hexToRgb(hex);
 
         if (!showingWinner) {
-          Serial.printf("Winner colour: #%s\n", hex);
-          winnerColor1 = colour;
-          winnerColor2 = CRGB(colour.r / 5, colour.g / 5, colour.b / 5);
+          Serial.printf("Winner color: #%s\n", hex);
+          winnerColor1 = color;
+          winnerColor2 = CRGB(color.r / 5, color.g / 5, color.b / 5);
           showingWinner = true;
           effectStep = 0;
         }
@@ -153,7 +158,7 @@ void fetchStatus() {
 
       // Clears Winner if Showing
       if (showingWinner) {
-        Serial.println("Winner colour cleared — returning to normal.");
+        Serial.println("Winner color cleared — returning to normal.");
         showingWinner = false;
         effectStep = 0;
       }
