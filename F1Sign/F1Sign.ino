@@ -37,16 +37,17 @@ Libraries needed (install via Arduino Library Manager):
 CRGB leds[NUM_LEDS];
 
 // Colors Constants
-#define COL_GREEN     CRGB(0, 210, 0)
-#define COL_GREEN_DIM CRGB(0, 60, 0)
-#define COL_YELLOW    CRGB(255, 200, 0)
-#define COL_ORANGE    CRGB(255, 100, 0)
-#define COL_RED       CRGB(220, 0, 0)
-#define COL_WHITE     CRGB(255, 255, 255)
+#define COL_GREEN       CRGB(0, 210, 0)
+#define COL_GREEN_DIM   CRGB(0, 60, 0)
+#define COL_YELLOW      CRGB(255, 200, 0)
+#define COL_YELLOW_DIM  CRGB(71, 56, 0)
+#define COL_ORANGE      CRGB(255, 100, 0)
+#define COL_RED         CRGB(220, 0, 0)
+#define COL_WHITE       CRGB(255, 255, 255)
 
 // LED Effect Constants
 #define BRIGHTNESS          255
-#define RIBBON_EFFECT_WIDTH 5
+#define RIBBON_EFFECT_WIDTH 7
 
 // == Connectivity Constants ======================================================================
 // Wi-Fi Details and Server IP
@@ -237,15 +238,13 @@ void runEffect(unsigned long now) {
       solidColorEffect(COL_GREEN);
       break;
     case 2:
-      // ribbonEffect(now, COL_GREEN_DIM, COL_YELLOW);
-      ribbonEffect(now, COL_GREEN, COL_YELLOW);
+      ribbonEffect(now, COL_GREEN_DIM, COL_YELLOW);
       break;
     case 3:
       effectPulse(now, COL_ORANGE);
       break;
     case 4:
-      // ribbonEffect(now, COL_YELLOW, COL_ORANGE);
-      ribbonEffect(now, CRGB(71, 56, 0), COL_ORANGE);
+      ribbonEffect(now, COL_YELLOW_DIM, COL_ORANGE);
       break;
     case 5:
       solidColorEffect(COL_RED);
