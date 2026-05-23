@@ -1,8 +1,11 @@
 # F1 Race Status LED Sign
 
-A real-time Formula 1 race status sign that display the current track status (green flag, yellow flag, safety car, red flag etc.).
+A real-time Formula 1 race status sign that displays the current track status (green flag, yellow flag, safety car, red flag, etc.).
 
-![Sign with Red Flag Lighting](images/Red%20Flag.jpg)
+<p align="center">
+  <img src="Images/RedFlag.jpg" width="400" align="center">
+</p>
+
 
 ---
 
@@ -23,7 +26,7 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 ### Sign Hardware
 | Component | Notes |
 |---|---|
-| [ESP32](https://a.co/d/02YDu525) | While Arduino boards could work most use single core processors, the ESP32's dual cores allows for the smoothest animation by running api retrieval on the second core.
+| [ESP32](https://a.co/d/02YDu525) | While Arduino boards could work, most use single-core processors; the ESP32's dual cores allow for the smoothest animation by running api retrieval on the second core.
 | [WS2812B LED strip](https://a.co/d/06bJ6InP) | I used a 48 LED long segment from the 16.4FT 300led Non-Waterproof varient |
 | [USB-C Power supply](https://a.co/d/0aMuG7ML) | Revmove the connection at 12V to put it in 5V mode|
 | 470Ω resistor |
@@ -66,30 +69,26 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 | - | Winner | Rotating team colour bands (30 mins after session end) |
 | - | Server unreachable | Ribbon effect - red |
 | - | Connecting to WiFi | Ribbon effect - white |
+
+##
+<p align="center">
+  <img src="Images/Default.jpg" Width="350" align="center">
+  <img src="Images/GreenFlag.jpg" Width="350" align="center">
+</p>
+<p align="center">
+  <img src="Images/YellowFlag.gif" Width="350" align="center">
+  <img src="Images/SafteyCarDeployed.gif" Width="350" align="center">
+</p>
+<p align="center">
+  <img src="Images/SafteyCar.gif" Width="350" align="center">
+  <img src="Images/RedFlag.jpg" Width="350" align="center">
+</p>
+<p align="center">
+  <img src="Images/VscDeployed.gif" Width="350" align="center">
+  <img src="Images/VscEnding.gif" Width="350" align="center">
+</p>
+
 ---
-###  No Session
-![Default](images/Default.jpg)
-
-### Green Flag
-![Green Flag](images/Green%20Flag.jpg)
-
-### Yellow Flag
-![Yellow Flag](images/Yellow%20Flag.gif)
-
-### SC Deployed
-![SC Deployed](images/Saftey%20Car%20Deployed.gif)
-
-### Safety Car
-![Safety Car](images/Saftey%20Car.gif)
-
-### Red flag
-![Red flag](images/Red%20Flag.jpg)
-
-### VSC Deployed
-![VSC Deployed](images/VSC%20Deployed.gif)
-
-### VSC Ending
-![VSC Ending](images/VSC%20Ending.gif)
 
 ## Pi Server Setup
 
@@ -114,7 +113,7 @@ pip install fastf1 flask
 ```powershell
 scp server.py yourUsername@PI_IP:~/f1sign/server.py
 ```
-> For all this process replace 'yourUsername' with the username for your Pi
+> For all this process, replace 'yourUsername' with the username for your Pi
 
 **3. Authenticate with F1TV on your main computer:**
 
@@ -170,15 +169,15 @@ sudo systemctl start f1sign
 
 ### Token Renewal
 
-F1TV authentication tokens expire approximately every 4 days. When the token expires the stream file will stay at 0 bytes and the sign will stop updating. Renew by re-authenticating on your PC and copying the fresh token to the Pi as described in step 3–4 above, then run the command below. It is recommended to renew on the Thursday before each race weekend.
+F1TV authentication tokens expire approximately every 4 days. When the token expires, the stream file will stay at 0 bytes, and the sign will stop updating. Renew by re-authenticating on your PC and copying the fresh token to the Pi as described in steps 3–4 above, then run the command below. It is recommended to renew on the Thursday before each race weekend.
 
 ```bash
 sudo systemctl restart f1sign
 ```
 ### IP Binding
-In order for the ESP32 to connect to the API, thie Pi must have a static IP address on the network. This can typically be done in your router's dashboard under a setting called IP Binding (_it can also be called IP reservation or DHCP reservation*). 
+In order for the ESP32 to connect to the API, the Pi must have a static IP address on the network. This can typically be done in your router's dashboard under a setting called IP Binding (_it can also be called IP reservation or DHCP reservation*). 
 
-> While this is feature is common on most consumer routers, some ISP supplied routers do not support it. In this case you will have to set a static IP address on the pi itself. (*This can cause potiontial issues if the router assigns that address to another device while the Pi is disconnected.*)
+> While this feature is common on most consumer routers, some ISP-supplied routers do not support it. In this case, you will have to set a static IP address on the pi itself. (*This can cause potential issues if the router assigns that address to another device while the Pi is disconnected.*)
 
 ---
 
@@ -217,21 +216,21 @@ Update the hardware constants at the top of `f1_led_sign.ino` to match your setu
 
 - GPIO 34, 35, 36, and 39 are input-only - do not use these for the LED data line
 - The ESP32 runs LED animations on core 1 and HTTP polling on core 0, so animations run uninterrupted during network calls
-- Insure that `credentials.h` is added to `.gitignore` to keep WiFi credentials private
+- Ensure that `credentials.h` is added to `.gitignore` to keep WiFi credentials private
 
 ---
 
 ## Data Source
 
-Live timing data is provided by [FastF1](https://github.com/theOehrly/Fast-F1) which connects to F1's SignalR live timing stream. A paid F1TV subscription is required for authenticated stream access.
+Live timing data is provided by [FastF1](https://github.com/theOehrly/Fast-F1), which connects to F1's SignalR live timing stream. A paid F1TV subscription is required for authenticated stream access.
 
 The server tracks the following stream messages:
 
 | Message | Purpose |
 |---------|---------|
 | `SessionStatus` | Detects session start, end, and finalisation |
-| `TrackStatus` | Live flag status (green, yellow, SC, red etc.) |
-| `SessionInfo` | Session type (Race, Qualifying, Practice etc.) |
+| `TrackStatus` | Live flag status (green, yellow, SC, red, etc.) |
+| `SessionInfo` | Session type (Race, Qualifying, Practice, etc.) |
 | `TopThree` | Race/qualifying leader for winner colour display |
 
 ---
@@ -258,20 +257,20 @@ The server tracks the following stream messages:
 
 This sign can be assembled as shown in the model of all the parts found [here](https://www.tinkercad.com/things/cDd0Z8cSi8h-f1-sign?sharecode=n5SaTvh2zsZV61PfMoRx6sGg9GLg6rmgf1fMAjp3OLI). I used CA glue to hold all of the parts together.
 
-> The Guide piece should no be glued in place it is only used to help align the LEGO car mount
+> The Guide piece should not be glued in place; it is only used to help align the LEGO car mount
 
-**Recommended Assembely Order**
+**Recommended Assembly Order**
 
 1. Cut and glue the acrylic in the frame
-2. Attach the LED stip as far from the frame as possible
-3. Attach the protoboard (*with circuit*) to the Lower Back Pannel
-   - Tip: The provied connector with the LED strip makes it much easier to solder the circuit and LED seperatly and attach afterwards.
-4. Glue the Lower and Upper Back Pannel into place
+2. Attach the LED strip as far from the frame as possible
+3. Attach the protoboard (*with circuit*) to the Lower Back Panel
+   - Tip: The provided connector with the LED strip makes it much easier to solder the circuit and LED separately and attach afterwards.
+4. Glue the Lower and Upper Back Panel into place
 5. Use the guide piece to glue the car mount to the acrylic
 
-> The upper back pannel has a wall hanger. If this is the desired method of display insure that the capcitor is attached to the circut in such a way that it does not purtrude to far from the back of the sign.
+> The upper back panel has a wall hanger. If this is the desired method of display, ensure that the capacitor is attached to the circuit in such a way that it does not protrude too far from the back of the sign.
 
-> The lower back pannel has 2 holes for the stand piece to slot into. This does not have to be glued in place.
+> The lower back panel has 2 holes for the stand piece to slot into. This does not have to be glued in place.
 
 ---
 
