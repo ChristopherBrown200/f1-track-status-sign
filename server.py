@@ -61,6 +61,7 @@ scheduleLock = threading.Lock()
 sessionEnded = False
 sessionType = None
 sessionStarted = False
+sessionFinalizedTime = None
 
 # == Load schedule ================================================================================
 def refreshSchedule():
@@ -226,7 +227,7 @@ def parseLine(line):
     return category, data
 
 def tailAndParse(filepath):
-    global sessionEnded, sessionType, lastTopThree
+    global sessionEnded, sessionType, lastTopThree, sessionFinalizedTime
     print(f"[Watcher] Thread started, looking for: {filepath}, exists={os.path.exists(filepath)}")
 
     try:
@@ -320,15 +321,20 @@ def tailAndParse(filepath):
                                         winner_already_set = state["winner_color"] is not None
 
                                     if sessionEnded and not winner_already_set and shouldShowWinner(sessionType):
-                                        print("[TopThree] Session ended, processing winner now.")
-                                        processWinner()
+                                        if sessionFinalizedTime is not None:
+                                            minsSince = (datetime.now(timezone.utc) - sessionFinalizedTime).total_seconds() / 60
+                                            if minsSince < 10:
+                                                print("[TopThree] Session ended, processing winner now.")
+                                                processWinner()
+                                            else:
+                                                print("[TopThree] Session ended too long ago — skipping winner.")
 
                             # Session status 
                             elif category == "SessionStatus":
-                                status_val = data.get("Status", "")
-                                print(f"[SessionStatus] {status_val} | type: {type(data).__name__} | {str(data)[:80]}")
+                                statusVal = data.get("Status", "")
+                                print(f"[SessionStatus] {statusVal} | type: {type(data).__name__} | {str(data)[:80]}")
 
-                                if status_val == "Started":
+                                if statusVal == "Started":
                                     session_started = True
                                     sessionEnded   = False
                                     with topThreeLock:
@@ -336,10 +342,19 @@ def tailAndParse(filepath):
                                     with stateLock:
                                         state["status"]  = "1"
                                         state["message"] = "AllClear"
+                                        state["winner_color"] = None
+
+                                    try:
+                                        if os.path.exists(WINNER_STATE_FILE):
+                                            os.remove(WINNER_STATE_FILE)
+                                    except Exception:
+                                        pass
+
                                     print("[SessionStatus] Session started — status set to green.")
 
-                                elif status_val == "Finalised" and not sessionEnded:
+                                elif statusVal == "Finalised" and not sessionEnded:
                                     sessionEnded = True
+                                    sessionFinalizedTime = datetime.now(timezone.utc)
                                     print(f"[SessionStatus] Session finalised — type: {sessionType}")
 
                                     with stateLock:
