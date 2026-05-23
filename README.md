@@ -2,6 +2,8 @@
 
 A real-time Formula 1 race status sign that display the current track status (green flag, yellow flag, safety car, red flag etc.).
 
+![Sign with Red Flag Lighting](images/Red%20Flag.jpg)
+
 ---
 
 ## How It Works
@@ -64,8 +66,30 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 | - | Winner | Rotating team colour bands (30 mins after session end) |
 | - | Server unreachable | Ribbon effect - red |
 | - | Connecting to WiFi | Ribbon effect - white |
-|
+---
+###  No Session
+![Default](images/Default.jpg)
 
+### Green Flag
+![Green Flag](images/Green%20Flag.jpg)
+
+### Yellow Flag
+![Yellow Flag](images/Yellow%20Flag.gif)
+
+### SC Deployed
+![SC Deployed](images/Saftey%20Car%20Deployed.gif)
+
+### Safety Car
+![Safety Car](images/Saftey%20Car.gif)
+
+### Red flag
+![Red flag](images/Red%20Flag.jpg)
+
+### VSC Deployed
+![VSC Deployed](images/VSC%20Deployed.gif)
+
+### VSC Ending
+![VSC Ending](images/VSC%20Ending.gif)
 
 ## Pi Server Setup
 
