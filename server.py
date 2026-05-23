@@ -34,6 +34,34 @@ RECONNECT_DELAY         = 15
 WINNER_DISPLAY_MINS     = 30
 WINNER_SESSION_TYPES    = ['Race', 'Sprint', 'Qualifying']
 
+# == National Flag Colors 2026 ====================================================================
+
+DRIVER_NATIONAL_FLAGS = {
+    "Lando NORRIS":      ['012169', 'C8102E', 'FFFFFF'],
+    "Max VERSTAPPEN":    ['AE1C28', 'FFFFFF', '21468B'],
+    "Gabriel BORTOLETO": ['009739', 'FEDD00', 'FFFFFF', '012169'],
+    "Isack HADJAR":      ['000091', 'FFFFFF', 'E1000F'],
+    "Pierre GASLY":      ['000091', 'FFFFFF', 'E1000F'],
+    "Sergio PEREZ":      ['006341', 'FFFFFF', 'C8102E'],
+    "Kimi ANTONELLI":    ['008C45', 'F4F9FF', 'CD212A'],
+    "Fernando ALONSO":   ['AA151B', 'F1BF00'],
+    "Charles LECLERC":   ['CE1126', 'FFFFFF'],
+    "Lance STROLL":      ['D80621', 'FFFFFF'],
+    "Alexander ALBON":   ['EF3340', 'FFFFFF', '00247D'],
+    "Nico HULKENBERG":   ['000000', 'DD0000', 'FFCC00'],
+    "Liam LAWSON":       ['012169', 'C8102E', 'FFFFFF'],
+    "Esteban OCON":      ['000091', 'FFFFFF', 'E1000F'],
+    "Arvid LINDBLAD":    ['012169', 'C8102E', 'FFFFFF'],
+    "Franco COLAPINTO":  ['6CACE4', 'FFB81C', 'FFFFFF'],
+    "Lewis HAMILTON":    ['012169', 'C8102E', 'FFFFFF'],
+    "Carlos SAINZ":      ['AA151B', 'F1BF00'],
+    "George RUSSELL":    ['012169', 'C8102E', 'FFFFFF'],
+    "Valtteri BOTTAS":   ['FFFFFF', '002F6C'],
+    "Oscar PIASTRI":     ['012169', 'E4002B', 'FFFFFF'],
+    "Oliver BEARMAN":    ['012169', 'C8102E', 'FFFFFF'],
+}
+
+
 # == FastF1 cache =================================================================================
 CACHE_DIR.mkdir(exist_ok=True)
 fastf1.Cache.enable_cache(str(CACHE_DIR))
