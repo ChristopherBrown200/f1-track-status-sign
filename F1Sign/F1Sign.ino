@@ -2,7 +2,7 @@
 F1 Track Status Sign ESP32 Code
 By: Christopher Brown (https://github.com/ChristopherBrown200)
 
-Reads from ESP32 and displasy the current track status
+Reads from pi sercer and displasy the current track status
 
 Flag effects:
   0 No Session          Dim white
