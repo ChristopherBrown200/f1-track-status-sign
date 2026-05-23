@@ -21,13 +21,16 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 ### Sign Hardware
 | Component | Notes |
 |---|---|
-| [ESP32](https://www.amazon.com/dp/B0B764963C?th=1) | While Arduino boards could work most use single core processors, the ESP32's dual cores allows for the smoothest animation by running api retrieval on the second core.
-| [WS2812B LED strip](https://www.amazon.com/dp/B09MVWN6CF?th=1) | I used a 48 LED long segment from the 16.4FT 300led Non-Waterproof varient |
-| [5V power supply](https://www.amazon.com/dp/B0DBPP52FD?th=1) | |
+| [ESP32](https://a.co/d/02YDu525) | While Arduino boards could work most use single core processors, the ESP32's dual cores allows for the smoothest animation by running api retrieval on the second core.
+| [WS2812B LED strip](https://a.co/d/06bJ6InP) | I used a 48 LED long segment from the 16.4FT 300led Non-Waterproof varient |
+| [USB-C Power supply](https://a.co/d/0aMuG7ML) | Revmove the connection at 12V to put it in 5V mode|
 | 470Ω resistor |
 | 1mF capacitor |
 | 3D Printed Housing | All of the `.stl` files can be found [here](3D%20Print%20Files/)
-| [Frosted Acrylic](https://www.amazon.com/dp/B0G4JJSFCS?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1) | I cut mine to 159mm x 244mm
+| [Frosted Acrylic](https://a.co/d/0hzmmOPK) | I cut mine to 159mm x 244mm |
+| [Protoboard](https://a.co/d/011fvpxh) | I used a 40 x 60mm board|
+| M2 Screws | Used to attach the protoboard to the back
+| [LEGO Speed Chapions F1 Car](https://www.lego.com/en-us/product/ferrari-sf-24-f1-race-car-77242) | *Forza Ferrari!*
 
 ### Other Hardware
 | Component | Notes |
@@ -224,6 +227,27 @@ The server tracks the following stream messages:
 **Winner colours not showing after a session**
 - Check `has_top_three` on the health endpoint - if `false` the TopThree data wasn't received
 - Check `session_ended` - if `false` the Finalised message wasn't processed
+
+---
+
+## Sign Assembly
+
+This sign can be assembled as shown in the model of all the parts found [here](https://www.tinkercad.com/things/cDd0Z8cSi8h-f1-sign?sharecode=n5SaTvh2zsZV61PfMoRx6sGg9GLg6rmgf1fMAjp3OLI). I used CA glue to hold all of the parts together.
+
+> The Guide piece should no be glued in place it is only used to help align the LEGO car mount
+
+**Recommended Assembely Order**
+
+1. Cut and glue the acrylic in the frame
+2. Attach the LED stip as far from the frame as possible
+3. Attach the protoboard (*with circuit*) to the Lower Back Pannel
+   - Tip: The provied connector with the LED strip makes it much easier to solder the circuit and LED seperatly and attach afterwards.
+4. Glue the Lower and Upper Back Pannel into place
+5. Use the guide piece to glue the car mount to the acrylic
+
+> The upper back pannel has a wall hanger. If this is the desired method of display insure that the capcitor is attached to the circut in such a way that it does not purtrude to far from the back of the sign.
+
+> The lower back pannel has 2 holes for the stand piece to slot into. This does not have to be glued in place.
 
 ---
 
