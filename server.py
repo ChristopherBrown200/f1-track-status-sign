@@ -218,7 +218,8 @@ def processWinner():
     team = p1.get('Team', 'Unknown')
     flag = DRIVER_NATIONAL_FLAGS.get(name)
 
-
+    if not flag:
+        print(f'[Winner] No flag data for: {name}')
 
     if not color:
         print('[Winner] No TeamColor in TopThree P1 entry.')
