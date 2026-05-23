@@ -40,6 +40,7 @@ Libraries needed (install via Arduino Library Manager):
 CRGB leds[NUM_LEDS];
 
 // Colors Constants
+#define COL_DEFAULT     CRGB(15, 15, 10)
 #define COL_GREEN       CRGB(0, 210, 0)
 #define COL_GREEN_DIM   CRGB(0, 60, 0)
 #define COL_YELLOW      CRGB(255, 200, 0)
@@ -234,7 +235,7 @@ void runEffect(unsigned long now) {
 
   switch (currentStatus) {
     case 0:
-      fill_solid(leds, NUM_LEDS, CRGB(10, 10, 10));
+      fill_solid(leds, NUM_LEDS, COL_DEFAULT);
       FastLED.show();
       break;
     case 1:
