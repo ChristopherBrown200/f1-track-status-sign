@@ -66,7 +66,7 @@ sessionFinalizedTime = None
 # == Load schedule ================================================================================
 def refreshSchedule():
     global sessionWindows
-    print("Refreshing F1 schedule...")
+    print('Refreshing F1 schedule...')
 
     try:
         year = datetime.now(timezone.utc).year
@@ -75,8 +75,8 @@ def refreshSchedule():
 
         for _, event in schedule.iterrows():
             for i in range(1, 6):
-                date = f"Session{i}DateUtc"
-                name = f"Session{i}"
+                date = f'Session{i}DateUtc'
+                name = f'Session{i}'
 
                 if date not in event or event[date] is None:
                     continue
@@ -98,10 +98,10 @@ def refreshSchedule():
 
         with scheduleLock:
             sessionWindows = windows
-        print(f"Schedule loaded: {len(windows)} session windows found.")
+        print(f'Schedule loaded: {len(windows)} session windows found.')
 
     except Exception as e:
-        print(f"Schedule refresh failed: {e}")
+        print(f'Schedule refresh failed: {e}')
 
 def schedule_refresh_loop():
     while True:
@@ -128,31 +128,31 @@ def sessionCheckLoop():
         with stateLock:
             # If session has been marked complete with "Finalised", don't let the schedule override it back to active
             if not sessionEnded:
-                state["session_active"] = active
+                state['session_active'] = active
                 if not active:
-                    state["status"]  = "0"
-                    state["message"] = "No session"
+                    state['status']  = '0'
+                    state['message'] = 'No session'
 
             if active and not prevActive and not sessionEnded:
-                print(f"[Schedule] Session starting: {name}")
-                state["winner_color"] = None
+                print(f'[Schedule] Session starting: {name}')
+                state['winner_color'] = None
                 winnerSetTime = None
                 with topThreeLock:
                     lastTopThree = None
 
             # Winner display timeout
-            if (state["winner_color"] is not None and winnerSetTime is not None and (not active or sessionEnded)):
+            if (state['winner_color'] is not None and winnerSetTime is not None and (not active or sessionEnded)):
                 elapsed = (now - winnerSetTime).total_seconds() / 60
 
                 if elapsed >= WINNER_DISPLAY_MINS:
-                    state["winner_color"] = None
+                    state['winner_color'] = None
                     winnerSetTime = None
                     try:
                         if os.path.exists(WINNER_STATE_FILE):
                             os.remove(WINNER_STATE_FILE)
                     except Exception:
                         pass
-                    print(f"[Winner] Display timeout ({WINNER_DISPLAY_MINS} mins) — clearing.")
+                    print(f'[Winner] Display timeout ({WINNER_DISPLAY_MINS} mins) — clearing.')
 
         prevActive = active
         time.sleep(30)
@@ -165,48 +165,48 @@ def processWinner():
         topThree = lastTopThree
 
     if not topThree:
-        print("[Winner] No TopThree data available.")
+        print('[Winner] No TopThree data available.')
         return
 
-    lines = topThree.get("Lines", {})
+    lines = topThree.get('Lines', {})
     p1 = None
     if isinstance(lines, dict):
         for key, entry in lines.items():
-            if isinstance(entry, dict) and str(entry.get("Position", "")) == "1":
+            if isinstance(entry, dict) and str(entry.get('Position', '')) == '1':
                 p1 = entry
                 break
-        if not p1 and "0" in lines and isinstance(lines["0"], dict):
-            p1 = lines["0"]
+        if not p1 and '0' in lines and isinstance(lines['0'], dict):
+            p1 = lines['0']
 
     if not p1:
-        print("[Winner] Could not find P1 in TopThree.")
+        print('[Winner] Could not find P1 in TopThree.')
         return
 
-    color = p1.get("TeamColour")
-    name = p1.get("FullName", "Unknown")
-    team = p1.get("Team", "Unknown")
+    color = p1.get('TeamColour')
+    name = p1.get('FullName', 'Unknown')
+    team = p1.get('Team', 'Unknown')
 
     if not color:
-        print("[Winner] No TeamColor in TopThree P1 entry.")
+        print('[Winner] No TeamColor in TopThree P1 entry.')
         return
 
-    print(f"[Winner] P1: {name} — {team} (#{color})")
+    print(f'[Winner] P1: {name} — {team} (#{color})')
     with stateLock:
-        state["winner_color"] = color
+        state['winner_color'] = color
     winnerSetTime = datetime.now(timezone.utc)
 
     # Save Winner to File Incase of Restart
     try:
         with open(WINNER_STATE_FILE, 'w') as f:
             json.dump({
-                "winner_color": color,
-                "winner_set_at": winnerSetTime.isoformat()
+                'winner_color': color,
+                'winner_set_at': winnerSetTime.isoformat()
             }, f)
-        print(f"[Winner] State saved to disk.")
+        print(f'[Winner] State saved to disk.')
     except Exception as e:
-        print(f"[Winner] Could not save state: {e}")
+        print(f'[Winner] Could not save state: {e}')
 
-    print(f"[Winner] Color set to #{color} — will clear in {WINNER_DISPLAY_MINS} mins.")
+    print(f'[Winner] Color set to #{color} — will clear in {WINNER_DISPLAY_MINS} mins.')
 
 def shouldShowWinner(stype):
     if not stype:
@@ -228,21 +228,21 @@ def parseLine(line):
 
 def tailAndParse(filepath):
     global sessionEnded, sessionType, lastTopThree, sessionFinalizedTime
-    print(f"[Watcher] Thread started, looking for: {filepath}, exists={os.path.exists(filepath)}")
+    print(f'[Watcher] Thread started, looking for: {filepath}, exists={os.path.exists(filepath)}')
 
     try:
         while True:
             while not os.path.exists(filepath) or os.path.getsize(filepath) == 0:
                 time.sleep(0.2)
 
-            print(f"[Watcher] Starting — file size: {os.path.getsize(filepath)} bytes")
+            print(f'[Watcher] Starting — file size: {os.path.getsize(filepath)} bytes')
 
             # Reset sessionStarted for new file so stale data from previous sessions can't set the status
             session_started = False
 
             try:
-                with open(filepath, "r", encoding="utf-8", errors="replace") as f:
-                    print(f"[Watcher] File opened successfully")
+                with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+                    print(f'[Watcher] File opened successfully')
                     f.seek(0)
                     while True:
                         # Truncation detection
@@ -250,7 +250,7 @@ def tailAndParse(filepath):
                             currentPos = f.tell()
                             actual_size = os.path.getsize(filepath)
                             if currentPos > actual_size:
-                                print(f"[Watcher] Truncated — resetting.")
+                                print(f'[Watcher] Truncated — resetting.')
                                 f.seek(0)
                         except OSError:
                             pass
@@ -259,7 +259,7 @@ def tailAndParse(filepath):
                         if not line:
                             # Check if file was deleted/recreated
                             if not os.path.exists(filepath):
-                                print("[Watcher] File gone — restarting watcher loop.")
+                                print('[Watcher] File gone — restarting watcher loop.')
                                 break
                             time.sleep(0.05)
                             continue
@@ -274,32 +274,32 @@ def tailAndParse(filepath):
                                 continue
 
                             # Track status
-                            if category == "TrackStatus":
+                            if category == 'TrackStatus':
                                 with stateLock:
-                                    if state["session_active"] and not sessionEnded and session_started:
-                                        state["status"]  = str(data.get("Status",  state["status"]))
-                                        state["message"] = str(data.get("Message", state["message"]))
-                                print(f"[TrackStatus] {state['status']} — {state['message']} (started={session_started})")
+                                    if state['session_active'] and not sessionEnded and session_started:
+                                        state['status']  = str(data.get('Status',  state['status']))
+                                        state['message'] = str(data.get('Message', state['message']))
+                                print(f'[TrackStatus] {state['status']} — {state['message']} (started={session_started})')
 
                             # Session info
-                            elif category == "SessionInfo":
-                                name = data.get("Name") or data.get("Type")
+                            elif category == 'SessionInfo':
+                                name = data.get('Name') or data.get('Type')
                                 if name and name != sessionType:
                                     sessionType = name
-                                    print(f"[SessionInfo] Session type: {sessionType}")
+                                    print(f'[SessionInfo] Session type: {sessionType}')
 
                             # TopThree
-                            elif category == "TopThree":
-                                lines_data = data.get("Lines")
+                            elif category == 'TopThree':
+                                lines_data = data.get('Lines')
                                 if lines_data:
                                     with topThreeLock:
                                         if lastTopThree is None:
-                                            lastTopThree = {"Lines": {}}
+                                            lastTopThree = {'Lines': {}}
 
                                         if isinstance(lines_data, list):
                                             # Post session data store as is
                                             for i, entry in enumerate(lines_data):
-                                                lastTopThree["Lines"][str(i)] = entry
+                                                lastTopThree['Lines'][str(i)] = entry
 
                                         elif isinstance(lines_data, dict):
                                             for key, entry in lines_data.items():
@@ -307,42 +307,42 @@ def tailAndParse(filepath):
                                                     continue
 
                                                 # Only store if it's a full entry with TeamColour
-                                                if "TeamColour" in entry:
-                                                    lastTopThree["Lines"][key] = entry
+                                                if 'TeamColour' in entry:
+                                                    lastTopThree['Lines'][key] = entry
 
-                                                elif key in lastTopThree["Lines"]:
+                                                elif key in lastTopThree['Lines']:
                                                     # Merge non-TeamColour fields into existing entry
-                                                    lastTopThree["Lines"][key].update(entry)
+                                                    lastTopThree['Lines'][key].update(entry)
 
-                                    p1_name = lastTopThree["Lines"].get("0", {}).get("FullName", "?")
-                                    print(f"[TopThree] Updated — P1: {p1_name}")
+                                    p1_name = lastTopThree['Lines'].get('0', {}).get('FullName', '?')
+                                    print(f'[TopThree] Updated — P1: {p1_name}')
 
                                     with stateLock:
-                                        winner_already_set = state["winner_color"] is not None
+                                        winner_already_set = state['winner_color'] is not None
 
                                     if sessionEnded and not winner_already_set and shouldShowWinner(sessionType):
                                         if sessionFinalizedTime is not None:
                                             minsSince = (datetime.now(timezone.utc) - sessionFinalizedTime).total_seconds() / 60
                                             if minsSince < 10:
-                                                print("[TopThree] Session ended, processing winner now.")
+                                                print('[TopThree] Session ended, processing winner now.')
                                                 processWinner()
                                             else:
-                                                print("[TopThree] Session ended too long ago — skipping winner.")
+                                                print('[TopThree] Session ended too long ago — skipping winner.')
 
                             # Session status 
-                            elif category == "SessionStatus":
-                                statusVal = data.get("Status", "")
-                                print(f"[SessionStatus] {statusVal} | type: {type(data).__name__} | {str(data)[:80]}")
+                            elif category == 'SessionStatus':
+                                statusVal = data.get('Status', '')
+                                print(f'[SessionStatus] {statusVal} | type: {type(data).__name__} | {str(data)[:80]}')
 
-                                if statusVal == "Started":
+                                if statusVal == 'Started':
                                     session_started = True
                                     sessionEnded   = False
                                     with topThreeLock:
                                         lastTopThree = None
                                     with stateLock:
-                                        state["status"]  = "1"
-                                        state["message"] = "AllClear"
-                                        state["winner_color"] = None
+                                        state['status']  = '1'
+                                        state['message'] = 'AllClear'
+                                        state['winner_color'] = None
 
                                     try:
                                         if os.path.exists(WINNER_STATE_FILE):
@@ -350,33 +350,33 @@ def tailAndParse(filepath):
                                     except Exception:
                                         pass
 
-                                    print("[SessionStatus] Session started — status set to green.")
+                                    print('[SessionStatus] Session started — status set to green.')
 
-                                elif statusVal == "Finalised" and not sessionEnded:
+                                elif statusVal == 'Finalised' and not sessionEnded:
                                     sessionEnded = True
                                     sessionFinalizedTime = datetime.now(timezone.utc)
-                                    print(f"[SessionStatus] Session finalised — type: {sessionType}")
+                                    print(f'[SessionStatus] Session finalised — type: {sessionType}')
 
                                     with stateLock:
-                                        state["session_active"] = False
-                                        state["status"]         = "0"
-                                        state["message"]        = "No session"
-                                    print("[SessionStatus] Session marked inactive.")
+                                        state['session_active'] = False
+                                        state['status']         = '0'
+                                        state['message']        = 'No session'
+                                    print('[SessionStatus] Session marked inactive.')
 
                                     if shouldShowWinner(sessionType):
                                         processWinner()
                                     else:
-                                        print(f"[SessionStatus] Not showing winner for: {sessionType}")
+                                        print(f'[SessionStatus] Not showing winner for: {sessionType}')
 
                         except Exception:
                             continue
 
             except Exception as e:
-                print(f"[Watcher] File read error: {e} — retrying...")
+                print(f'[Watcher] File read error: {e} — retrying...')
                 time.sleep(1)
 
     except Exception as e:
-        print(f"[Watcher] FATAL ERROR: {e}")
+        print(f'[Watcher] FATAL ERROR: {e}')
         traceback.print_exc()
 
 # == Flask server =================================================================================
@@ -386,17 +386,17 @@ app = Flask(__name__)
 def status():
     with stateLock:
         return jsonify({
-            "status":         state["status"],
-            "message":        state["message"],
-            "session_active": state["session_active"],
-            "winner_color":  state["winner_color"],
+            'status':         state['status'],
+            'message':        state['message'],
+            'session_active': state['session_active'],
+            'winner_color':   state['winner_color'],
         })
 
 @app.route('/health')
 def health():
     active, name = isSessionActive()
     with stateLock:
-        winner = state["winner_color"]
+        winner = state['winner_color']
     with topThreeLock:
         hasTopThree = lastTopThree is not None
     mins_remaining = None
@@ -404,25 +404,25 @@ def health():
         elapsed = (datetime.now(timezone.utc) - winnerSetTime).total_seconds() / 60
         mins_remaining = max(0, round(WINNER_DISPLAY_MINS - elapsed, 1))
     return jsonify({
-        "ok":                    True,
-        "session_active":        active,
-        "session_name":          name,
-        "session_type":          sessionType,
-        "session_ended":         sessionEnded,
-        "utc_time":              datetime.now(timezone.utc).isoformat(),
-        "has_top_three":         hasTopThree,
-        "winner_color":         winner,
-        "winner_mins_remaining": mins_remaining,
+        'ok':                    True,
+        'session_active':        active,
+        'session_name':          name,
+        'session_type':          sessionType,
+        'session_ended':         sessionEnded,
+        'utc_time':              datetime.now(timezone.utc).isoformat(),
+        'has_top_three':         hasTopThree,
+        'winner_color':          winner,
+        'winner_mins_remaining': mins_remaining,
     })
 
 # == Main =========================================================================================
 def main():
-    print("Starting F1 sign middleware server...")
+    print('Starting F1 sign middleware server...')
 
     # Remove any stream file from previous run
     if os.path.exists(OUTPUT_FILE):
         os.remove(OUTPUT_FILE)
-        print(f"[Main] Removed old stream file.")
+        print(f'[Main] Removed old stream file.')
 
     # Restore winner state from file if it exists and hasn't expired
     global winnerSetTime
@@ -430,21 +430,21 @@ def main():
         if os.path.exists(WINNER_STATE_FILE):
             with open(WINNER_STATE_FILE, 'r') as f:
                 saved = json.load(f)
-            color = saved.get("winner_color")
-            saved_at = datetime.fromisoformat(saved.get("winner_set_at"))
+            color = saved.get('winner_color')
+            saved_at = datetime.fromisoformat(saved.get('winner_set_at'))
             elapsed = (datetime.now(timezone.utc) - saved_at).total_seconds() / 60
 
             if elapsed < WINNER_DISPLAY_MINS and color:
-                state["winner_color"] = color
+                state['winner_color'] = color
                 winnerSetTime          = saved_at
-                print(f"[Main] Restored winner color #{color} ({elapsed:.1f} mins ago, {WINNER_DISPLAY_MINS - elapsed:.1f} mins remaining).")
+                print(f'[Main] Restored winner color #{color} ({elapsed:.1f} mins ago, {WINNER_DISPLAY_MINS - elapsed:.1f} mins remaining).')
 
             else:
                 os.remove(WINNER_STATE_FILE)
-                print("[Main] Winner state expired — cleared.")
+                print('[Main] Winner state expired — cleared.')
 
     except Exception as e:
-        print(f"[Main] Could not restore winner state: {e}")
+        print(f'[Main] Could not restore winner state: {e}')
 
     refreshSchedule()
 
@@ -457,23 +457,23 @@ def main():
     check_thread.start()
     watcher.start()
     flask_thread.start()
-    print(f"Flask server running on port {FLASK_PORT}")
+    print(f'Flask server running on port {FLASK_PORT}')
 
     while True:
         try:
-            print("Connecting to F1 live timing stream...")
+            print('Connecting to F1 live timing stream...')
             client = SignalRClient(filename=OUTPUT_FILE, filemode='w', timeout=60)
             client.start()
-            print(f"Stream disconnected — reconnecting in {RECONNECT_DELAY}s...")
+            print(f'Stream disconnected — reconnecting in {RECONNECT_DELAY}s...')
 
         except KeyboardInterrupt:
-            print("\nStopped.")
+            print('\nStopped.')
             break
 
         except Exception as e:
-            print(f"Stream error: {e} — reconnecting in {RECONNECT_DELAY}s...")
+            print(f'Stream error: {e} — reconnecting in {RECONNECT_DELAY}s...')
 
         time.sleep(RECONNECT_DELAY)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
