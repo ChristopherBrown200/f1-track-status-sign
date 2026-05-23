@@ -5,15 +5,18 @@ By: Christopher Brown (https://github.com/ChristopherBrown200)
 Reads from ESP32 and displasy the current track status
 
 Flag effects:
-  Connecting          White Ribbon
-  Green flag          Solid green
-  Yellow flag         Yellow Ribbon with Green Background
-  Safey Car Deployed  Pulse Orange
-  Safety car          Orange Ribbon with Yellow Background
-  VSC                 Pulse Yellow
-  VSC ending          Quickly Flash Yellow
-  Red flag            Solid Red
-  Winner              Team Color Bands After Session Ends
+  0 No Session          Dim white
+  1 Green flag          Solid green
+  2 Yellow flag         Ribbon effect - yellow over green
+  3 Safey Car Deployed  Pulse Orange
+  4 Safety car          Ribbon effect - orange over yellow
+  5 Red flag            Solid Red
+  6 VSC                 Pulse Yellow
+  7 VSC ending          Quickly Flash Yellow
+  - Winner              Rotating team colour bands
+
+  - Server unreachable  Ribbon effect - red
+  - Connecting to WiFi  Ribbon effect - white
 
 Libraries needed (install via Arduino Library Manager):
   FastLED      by Daniel Garcia
