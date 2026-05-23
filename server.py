@@ -337,8 +337,7 @@ def tailAndParse(filepath):
                                 if statusVal == 'Started':
                                     session_started = True
                                     sessionEnded   = False
-                                    with topThreeLock:
-                                        lastTopThree = None
+
                                     with stateLock:
                                         state['status']  = '1'
                                         state['message'] = 'AllClear'
