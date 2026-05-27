@@ -26,7 +26,6 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 | [ESP32](https://a.co/d/02YDu525) | While Arduino boards could work most use single core processors, the ESP32's dual cores allows for the smoothest animation by running api retrieval on the second core.
 | [WS2812B LED strip](https://a.co/d/06bJ6InP) | I used a 48 LED long segment from the 16.4FT 300led Non-Waterproof varient |
 | [USB-C Power supply](https://a.co/d/0aMuG7ML) | Revmove the connection at 12V to put it in 5V mode|
-| 470Ω resistor |
 | 1mF capacitor |
 | 3D Printed Housing | All of the `.stl` files can be found [here](3D%20Print%20Files/)
 | [Frosted Acrylic](https://a.co/d/0hzmmOPK) | I cut mine to 159mm x 244mm |
