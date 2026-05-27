@@ -34,6 +34,34 @@ RECONNECT_DELAY         = 15
 WINNER_DISPLAY_MINS     = 30
 WINNER_SESSION_TYPES    = ['Race', 'Sprint', 'Qualifying']
 
+# == National Flag Colors 2026 ====================================================================
+
+DRIVER_NATIONAL_FLAGS = {
+    "Lando NORRIS":      ['012169', 'C8102E', 'FFFFFF'],
+    "Max VERSTAPPEN":    ['AE1C28', 'FFFFFF', '21468B'],
+    "Gabriel BORTOLETO": ['009739', 'FEDD00', 'FFFFFF', '012169'],
+    "Isack HADJAR":      ['000091', 'FFFFFF', 'E1000F'],
+    "Pierre GASLY":      ['000091', 'FFFFFF', 'E1000F'],
+    "Sergio PEREZ":      ['006341', 'FFFFFF', 'C8102E'],
+    "Kimi ANTONELLI":    ['008C45', 'F4F9FF', 'CD212A'],
+    "Fernando ALONSO":   ['AA151B', 'F1BF00'],
+    "Charles LECLERC":   ['CE1126', 'FFFFFF'],
+    "Lance STROLL":      ['D80621', 'FFFFFF'],
+    "Alexander ALBON":   ['EF3340', 'FFFFFF', '00247D'],
+    "Nico HULKENBERG":   ['000000', 'DD0000', 'FFCC00'],
+    "Liam LAWSON":       ['012169', 'C8102E', 'FFFFFF'],
+    "Esteban OCON":      ['000091', 'FFFFFF', 'E1000F'],
+    "Arvid LINDBLAD":    ['012169', 'C8102E', 'FFFFFF'],
+    "Franco COLAPINTO":  ['6CACE4', 'FFB81C', 'FFFFFF'],
+    "Lewis HAMILTON":    ['012169', 'C8102E', 'FFFFFF'],
+    "Carlos SAINZ":      ['AA151B', 'F1BF00'],
+    "George RUSSELL":    ['012169', 'C8102E', 'FFFFFF'],
+    "Valtteri BOTTAS":   ['FFFFFF', '002F6C'],
+    "Oscar PIASTRI":     ['012169', 'E4002B', 'FFFFFF'],
+    "Oliver BEARMAN":    ['012169', 'C8102E', 'FFFFFF'],
+}
+
+
 # == FastF1 cache =================================================================================
 CACHE_DIR.mkdir(exist_ok=True)
 fastf1.Cache.enable_cache(str(CACHE_DIR))
@@ -44,7 +72,8 @@ state = {
     'status':           '0',
     'message':          'No session',
     'session_active':   False,
-    'winner_color':    None,
+    'winner_color':     None,
+    'winner_flag':      None,
 }
 stateLock = threading.Lock()
 winnerSetTime = None
@@ -136,6 +165,7 @@ def sessionCheckLoop():
             if active and not prevActive and not sessionEnded:
                 print(f'[Schedule] Session starting: {name}')
                 state['winner_color'] = None
+                state['winner_flag'] = None
                 winnerSetTime = None
                 with topThreeLock:
                     lastTopThree = None
@@ -146,6 +176,7 @@ def sessionCheckLoop():
 
                 if elapsed >= WINNER_DISPLAY_MINS:
                     state['winner_color'] = None
+                    state['winner_flag'] = None
                     winnerSetTime = None
                     try:
                         if os.path.exists(WINNER_STATE_FILE):
@@ -185,6 +216,10 @@ def processWinner():
     color = p1.get('TeamColour')
     name = p1.get('FullName', 'Unknown')
     team = p1.get('Team', 'Unknown')
+    flag = DRIVER_NATIONAL_FLAGS.get(name)
+
+    if not flag:
+        print(f'[Winner] No flag data for: {name}')
 
     if not color:
         print('[Winner] No TeamColor in TopThree P1 entry.')
@@ -193,6 +228,7 @@ def processWinner():
     print(f'[Winner] P1: {name} — {team} (#{color})')
     with stateLock:
         state['winner_color'] = color
+        state['winner_flag'] = flag
     winnerSetTime = datetime.now(timezone.utc)
 
     # Save Winner to File Incase of Restart
@@ -200,6 +236,7 @@ def processWinner():
         with open(WINNER_STATE_FILE, 'w') as f:
             json.dump({
                 'winner_color': color,
+                'winner_flag': flag,
                 'winner_set_at': winnerSetTime.isoformat()
             }, f)
         print(f'[Winner] State saved to disk.')
@@ -342,6 +379,7 @@ def tailAndParse(filepath):
                                         state['status']  = '1'
                                         state['message'] = 'AllClear'
                                         state['winner_color'] = None
+                                        state['winner_flag'] = None
 
                                     try:
                                         if os.path.exists(WINNER_STATE_FILE):
@@ -389,6 +427,7 @@ def status():
             'message':        state['message'],
             'session_active': state['session_active'],
             'winner_color':   state['winner_color'],
+            'winner_flag':    state['winner_flag'],
         })
 
 @app.route('/health')
@@ -396,6 +435,7 @@ def health():
     active, name = isSessionActive()
     with stateLock:
         winner = state['winner_color']
+        flag = state['winner_flag']
     with topThreeLock:
         hasTopThree = lastTopThree is not None
     mins_remaining = None
@@ -411,6 +451,7 @@ def health():
         'utc_time':              datetime.now(timezone.utc).isoformat(),
         'has_top_three':         hasTopThree,
         'winner_color':          winner,
+        'winner_flag':           flag,
         'winner_mins_remaining': mins_remaining,
     })
 
@@ -430,12 +471,14 @@ def main():
             with open(WINNER_STATE_FILE, 'r') as f:
                 saved = json.load(f)
             color = saved.get('winner_color')
+            flag = saved.get('winner_flag')
             saved_at = datetime.fromisoformat(saved.get('winner_set_at'))
             elapsed = (datetime.now(timezone.utc) - saved_at).total_seconds() / 60
 
             if elapsed < WINNER_DISPLAY_MINS and color:
                 state['winner_color'] = color
-                winnerSetTime          = saved_at
+                state['winner_flag'] = flag
+                winnerSetTime = saved_at
                 print(f'[Main] Restored winner color #{color} ({elapsed:.1f} mins ago, {WINNER_DISPLAY_MINS - elapsed:.1f} mins remaining).')
 
             else:

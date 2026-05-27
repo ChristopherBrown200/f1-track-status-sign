@@ -74,9 +74,12 @@ int  currentStatus  = 0;
 bool showingWinner  = false;
 CRGB winnerColor1   = CRGB::White;
 CRGB winnerColor2   = CRGB::Black;
+int  numFlagColors  = 0;
+CRGB flagColors[4]  = {CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black};
 
 // Effect Details
 unsigned long lastEffect  = 0;
+unsigned long lastToggle  = 0;
 uint32_t  effectStep      = 0;
 bool     effectToggle     = false;
 
@@ -139,7 +142,7 @@ void fetchStatus() {
 
   if (code == 200) {
     String body = http.getString();
-    DynamicJsonDocument doc(512);
+    DynamicJsonDocument doc(1024);
 
     if (!deserializeJson(doc, body)) {
       failedPollsCount = 0;
@@ -156,7 +159,25 @@ void fetchStatus() {
           winnerColor2 = CRGB(color.r / 5, color.g / 5, color.b / 5);
           showingWinner = true;
           effectStep = 0;
+          effectToggle = false;
+          lastToggle = millis();
+
+          if (!doc["winner_flag"].isNull()){
+            JsonArray flagColorsTemp = doc["winner_flag"].as<JsonArray>();
+            numFlagColors = min((int)flagColorsTemp.size(), 4);
+
+            for (int i = 0; i < numFlagColors; i++){
+              flagColors[i] = hexToRgb(flagColorsTemp[i].as<const char*>());
+            }
+          }
+          else{
+            numFlagColors = 2;
+            flagColors[0] = winnerColor1;
+            flagColors[1] = winnerColor2;
+          }
         }
+
+
         http.end();
         return;
       }
@@ -308,15 +329,43 @@ void ribbonEffect(unsigned long now, CRGB mainColor, CRGB ribbonColor) {
 
 // Displays Effect with Winning Team Colors
 void effectWinner(unsigned long now) {
+  if (now - lastToggle > 10000) {
+    effectToggle = !effectToggle;
+    lastToggle = now;
+  }
+
+  if (effectToggle){
+    effectFlag(now); // TODO: Flip Order
+  }
+  else{
+    effectTeam(now);
+  }
+}
+
+void effectTeam(unsigned long now){
   if (now - lastEffect < 80) return;
   lastEffect = now;
+
   int seg = NUM_LEDS / 2;
   for (int i = 0; i < NUM_LEDS; i++) {
     int zone = ((i + effectStep) % NUM_LEDS) / seg;
     leds[i] = (zone == 0) ? winnerColor1 : winnerColor2;
   }
+
   FastLED.show();
   effectStep++;
 }
 
+void effectFlag(unsigned long now){
+  if (now - lastEffect < 80) return;
+  lastEffect = now;
 
+  for (int i = 0; i < NUM_LEDS; i++){
+    int zone = ((i + effectStep) % (numFlagColors * 4)) / 4;
+        if (zone >= numFlagColors) zone = numFlagColors - 1;
+        leds[i] = flagColors[zone];
+  }
+
+  FastLED.show();
+  effectStep++;
+}
