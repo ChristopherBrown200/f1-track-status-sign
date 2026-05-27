@@ -65,7 +65,7 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 | `5` | Red flag | Solid red |
 | `6` | VSC Deployed | Pulse yellow |
 | `7` | VSC Ending | Quickly flash yellow |
-| - | Winner | Rotating team colour bands (30 mins after session end) |
+| - | Winner | Alternates between: rotating team colour bands & drivers national flag colors (30 mins after session end) |
 | - | Server unreachable | Ribbon effect - red |
 | - | Connecting to WiFi | Ribbon effect - white |
 
