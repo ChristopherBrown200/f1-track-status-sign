@@ -29,6 +29,8 @@ Libraries needed (install via Arduino Library Manager):
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
+#include "soc/rtc_cntl_reg.h"
+
 // == LED Values ==================================================================================
 // LED Hardware Details Constants
 #define LED_PIN     32
@@ -85,6 +87,7 @@ bool     effectToggle     = false;
 
 // == Setup =======================================================================================
 void setup() {
+  // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   Serial.begin(115200);
 
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
