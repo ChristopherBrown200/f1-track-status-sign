@@ -26,14 +26,14 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 ### Sign Hardware
 | Component | Notes |
 |---|---|
-| [ESP32](https://a.co/d/02YDu525) | While Arduino boards could work, most use single-core processors; the ESP32's dual cores allow for the smoothest animation by running api retrieval on the second core.
+| [ESP32](https://a.co/d/00CtG8Fz) | While Arduino boards could work, most use single-core processors; the ESP32's dual cores allow for the smoothest animation by running api retrieval on the second core.
 | [WS2812B LED strip](https://a.co/d/06bJ6InP) | I used a 48 LED long segment from the 16.4FT 300led Non-Waterproof varient |
-| [USB-C Power supply](https://a.co/d/0aMuG7ML) | Revmove the connection at 12V to put it in 5V mode|
+| [5V Power Supply](https://a.co/d/0e30fwZi) | |
 | 1mF capacitor |
-| 3D Printed Housing | All of the `.stl` files can be found [here](3D%20Print%20Files/)
-| [Frosted Acrylic](https://a.co/d/0hzmmOPK) | I cut mine to 159mm x 244mm |
+| 3D Printed Housing | All of the `.stl` files can be found [here](3D%20Print%20Files/) *(Physical Rework Comming)*
+| [Frosted Acrylic](https://a.co/d/0hzmmOPK) | I cut mine to 159mm x 244mm *(Physical Rework Comming)* |
 | [Protoboard](https://a.co/d/011fvpxh) | I used a 40 x 60mm board|
-| M2 Screws | Used to attach the protoboard to the back
+| M2 Screws | Used to attach the protoboard to the back *(Physical Rework Comming)*
 | [LEGO Speed Chapions F1 Car](https://www.lego.com/en-us/product/ferrari-sf-24-f1-race-car-77242) | *Forza Ferrari!*
 
 ### Other Hardware
@@ -41,7 +41,7 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 |---|---|
 | Raspberry Pi | Model 3B+ or newer should work (I used a Model 4B) |
 | Micro SD Card | Must be large enough to hold PiOS lite, server.py, & f1auth.json |
-| Ethernet Cable (Optional) | Can be used to connect pi to network |
+| Ethernet Cable *(Optional)* | Can be used to connect pi to network |
 
 ---
 
