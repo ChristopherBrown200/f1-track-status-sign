@@ -59,17 +59,20 @@ CRGB leds[NUM_LEDS];
 // Wi-Fi Details and Server IP
 #include "credentials.h"
 
+// Connectivity
+bool wifiConnected      = false;
+bool serverUnreachable  = false;
+unsigned long lastPoll  = 0;
+int  failedPollsCount   = 0;
+
+#define SHOW_WIFI_DISCONNECT_TIMMER 30000
+
 // Data Server Details
 #define HOST_PORT         5000
 #define POLL_INTERVAL     10000
 #define MAX_FAILED_POLLS  3
 
 // == State Values ================================================================================
-// Connectivity
-bool wifiConnected      = false;
-bool serverUnreachable  = false;
-unsigned long lastPoll  = 0;
-int  failedPollsCount   = 0;
 
 // Track Status
 int  currentStatus  = 0;
@@ -105,7 +108,7 @@ void loop() {
   // If WiFi connection is lost reconnect
   if (WiFi.status() != WL_CONNECTED) {
     wifiConnected = false;
-    connectWifi();
+    reconnectWifi();
     return;
   }
 
@@ -124,6 +127,27 @@ void connectWifi() {
 
   wifiConnected = true;
   Serial.println("WiFi connected!");
+}
+
+void reconnectWifi() {
+  Serial.printf("Reconnecting to %s\n", WIFI_SSID);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+  unsigned long startedReconnect = millis();
+
+  while (WiFi.status() != WL_CONNECTED) {
+    unsigned long now = millis();
+
+    if (now - startedReconnect > SHOW_WIFI_DISCONNECT_TIMMER){
+      ribbonEffect(now, CRGB::Black, COL_WHITE);
+    }
+    else{
+      runEffect(now);
+    }
+  }
+
+  wifiConnected = true;
+  Serial.println("WiFi reconnected!");
 }
 
 // == Polling Track Status From Server ============================================================
