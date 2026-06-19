@@ -38,8 +38,7 @@ Libraries needed (install via Arduino Library Manager):
 #define COLOR_ORDER     GRB
 
 // LED State Array
-CRGB ledsTop[NUM_LEDS];
-CRGB ledsBottom[NUM_LEDS];
+CRGB leds[NUM_LEDS];
 
 // Colors Constants
 #define COL_DEFAULT     CRGB(45, 45, 30)
@@ -92,8 +91,8 @@ bool     effectToggle     = false;
 void setup() {
   Serial.begin(115200);
 
-  FastLED.addLeds<LED_TYPE, LED_PIN_TOP, COLOR_ORDER>(ledsTop, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  FastLED.addLeds<LED_TYPE, LED_PIN_BOTTOM, COLOR_ORDER>(ledsBottom, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<LED_TYPE, LED_PIN_TOP, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<LED_TYPE, LED_PIN_BOTTOM, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
 
   bootAnimation();
@@ -255,10 +254,8 @@ CRGB hexToRgb(const char* hex) {
 // Start Up Boot Animation
 void bootAnimation() {
   for (int i = 0; i < NUM_LEDS; i += 2) {
-    ledsTop[i] = COL_RED;
-    ledsTop[NUM_LEDS - i + 1] = COL_YELLOW;
-    ledsBottom[i] = COL_RED;
-    ledsBottom[NUM_LEDS - i + 1] = COL_YELLOW;
+    leds[i] = COL_RED;
+    leds[NUM_LEDS - i + 1] = COL_YELLOW;
     FastLED.show();
     delay(30);
   }
@@ -268,8 +265,7 @@ void bootAnimation() {
     delay(10);
   }
   FastLED.setBrightness(BRIGHTNESS);
-  fill_solid(ledsTop, NUM_LEDS, CRGB::Black);
-  fill_solid(ledsBottom, NUM_LEDS, CRGB::Black);
+  fill_solid(leds, NUM_LEDS, CRGB::Black);
   FastLED.show();
 }
 
@@ -314,8 +310,7 @@ void runEffect(unsigned long now) {
 
 // Makes All LEDs a Single Color
 void solidColorEffect(CRGB color){
-  fill_solid(ledsTop, NUM_LEDS, color);
-  fill_solid(ledsBottom, NUM_LEDS, color);
+  fill_solid(leds, NUM_LEDS, color);
   FastLED.show();
 }
 
@@ -328,8 +323,7 @@ void effectPulse(unsigned long now, CRGB color) {
 
   float val = abs(sin(effectStep * 0.025f));
   CRGB c = blend(dim, color, (uint8_t)(val * 255));
-  fill_solid(ledsTop, NUM_LEDS, c);
-  fill_solid(ledsBottom, NUM_LEDS, c);
+  fill_solid(leds, NUM_LEDS, c);
   FastLED.show();
   effectStep++;
 }
@@ -339,8 +333,7 @@ void effectFastFlash(unsigned long now, CRGB color) {
   if (now - lastEffect < 120) return;
   lastEffect   = now;
   effectToggle = !effectToggle;
-  fill_solid(ledsTop, NUM_LEDS, effectToggle ? COL_YELLOW : CRGB::Black);
-  fill_solid(ledsBottom, NUM_LEDS, effectToggle ? COL_YELLOW : CRGB::Black);
+  fill_solid(leds, NUM_LEDS, effectToggle ? COL_YELLOW : CRGB::Black);
   FastLED.show();
 }
 
@@ -352,8 +345,7 @@ void ribbonEffect(unsigned long now, CRGB mainColor, CRGB ribbonColor) {
 
   for (int i = 0; i < NUM_LEDS; i++){
     int zone = ((i + effectStep) % NUM_LEDS) / RIBBON_EFFECT_WIDTH;
-    ledsTop[i] = (zone == 0) ? ribbonColor : mainColor;
-    ledsBottom[i] = (zone == 0) ? ribbonColor : mainColor;
+    leds[i] = (zone == 0) ? ribbonColor : mainColor;
   }
 
   FastLED.show();
@@ -382,8 +374,7 @@ void effectTeam(unsigned long now){
   int seg = NUM_LEDS / 2;
   for (int i = 0; i < NUM_LEDS; i++) {
     int zone = ((i + effectStep) % NUM_LEDS) / seg;
-    ledsTop[i] = (zone == 0) ? winnerColor1 : winnerColor2;
-    ledsBottom[i] = (zone == 0) ? winnerColor1 : winnerColor2;
+    leds[i] = (zone == 0) ? winnerColor1 : winnerColor2;
   }
 
   FastLED.show();
@@ -397,8 +388,7 @@ void effectFlag(unsigned long now){
   for (int i = 0; i < NUM_LEDS; i++){
     int zone = ((i + effectStep) % (numFlagColors * 4)) / 4;
         if (zone >= numFlagColors) zone = numFlagColors - 1;
-        ledsTop[i] = flagColors[zone];
-        ledsBottom[i] = flagColors[zone];
+        leds[i] = flagColors[zone];
   }
 
   FastLED.show();
