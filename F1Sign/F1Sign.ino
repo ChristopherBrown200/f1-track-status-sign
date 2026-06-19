@@ -33,13 +33,15 @@ Libraries needed (install via Arduino Library Manager):
 
 // == LED Values ==================================================================================
 // LED Hardware Details Constants
-#define LED_PIN     32
-#define NUM_LEDS    48
+#define LED_PIN_TOP     32
+#define LED_PIN_BOTTOM     33
+#define NUM_LEDS    40
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
 
 // LED State Array
-CRGB leds[NUM_LEDS];
+CRGB ledsTop[NUM_LEDS];
+CRGB ledsBottom[NUM_LEDS];
 
 // Colors Constants
 #define COL_DEFAULT     CRGB(15, 15, 10)
@@ -93,7 +95,8 @@ void setup() {
   // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   Serial.begin(115200);
 
-  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<LED_TYPE, LED_PIN_TOP, COLOR_ORDER>(ledsTop, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<LED_TYPE, LED_PIN_BOTTOM, COLOR_ORDER>(ledsBottom, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
 
   bootAnimation();
@@ -255,8 +258,10 @@ CRGB hexToRgb(const char* hex) {
 // Start Up Boot Animation
 void bootAnimation() {
   for (int i = 0; i < NUM_LEDS; i += 2) {
-    leds[i] = COL_RED;
-    leds[NUM_LEDS - i + 1] = COL_YELLOW;
+    ledsTop[i] = COL_RED;
+    ledsTop[NUM_LEDS - i + 1] = COL_YELLOW;
+    ledsBottom[i] = COL_RED;
+    ledsBottom[NUM_LEDS - i + 1] = COL_YELLOW;
     FastLED.show();
     delay(30);
   }
@@ -266,7 +271,8 @@ void bootAnimation() {
     delay(10);
   }
   FastLED.setBrightness(BRIGHTNESS);
-  fill_solid(leds, NUM_LEDS, CRGB::Black);
+  fill_solid(ledsTop, NUM_LEDS, CRGB::Black);
+  fill_solid(ledsBottom, NUM_LEDS, CRGB::Black);
   FastLED.show();
 }
 
@@ -283,8 +289,7 @@ void runEffect(unsigned long now) {
 
   switch (currentStatus) {
     case 0:
-      fill_solid(leds, NUM_LEDS, COL_DEFAULT);
-      FastLED.show();
+      solidColorEffect(COL_DEFAULT);
       break;
     case 1:
       solidColorEffect(COL_GREEN);
@@ -312,7 +317,8 @@ void runEffect(unsigned long now) {
 
 // Makes All LEDs a Single Color
 void solidColorEffect(CRGB color){
-  fill_solid(leds, NUM_LEDS, color);
+  fill_solid(ledsTop, NUM_LEDS, color);
+  fill_solid(ledsBottom, NUM_LEDS, color);
   FastLED.show();
 }
 
@@ -325,7 +331,8 @@ void effectPulse(unsigned long now, CRGB color) {
 
   float val = abs(sin(effectStep * 0.025f));
   CRGB c = blend(dim, color, (uint8_t)(val * 255));
-  fill_solid(leds, NUM_LEDS, c);
+  fill_solid(ledsTop, NUM_LEDS, c);
+  fill_solid(ledsBottom, NUM_LEDS, c);
   FastLED.show();
   effectStep++;
 }
@@ -335,7 +342,8 @@ void effectFastFlash(unsigned long now, CRGB color) {
   if (now - lastEffect < 120) return;
   lastEffect   = now;
   effectToggle = !effectToggle;
-  fill_solid(leds, NUM_LEDS, effectToggle ? COL_YELLOW : CRGB::Black);
+  fill_solid(ledsTop, NUM_LEDS, effectToggle ? COL_YELLOW : CRGB::Black);
+  fill_solid(ledsBottom, NUM_LEDS, effectToggle ? COL_YELLOW : CRGB::Black);
   FastLED.show();
 }
 
@@ -347,7 +355,8 @@ void ribbonEffect(unsigned long now, CRGB mainColor, CRGB ribbonColor) {
 
   for (int i = 0; i < NUM_LEDS; i++){
     int zone = ((i + effectStep) % NUM_LEDS) / RIBBON_EFFECT_WIDTH;
-    leds[i] = (zone == 0) ? ribbonColor : mainColor;
+    ledsTop[i] = (zone == 0) ? ribbonColor : mainColor;
+    ledsBottom[i] = (zone == 0) ? ribbonColor : mainColor;
   }
 
   FastLED.show();
@@ -376,7 +385,8 @@ void effectTeam(unsigned long now){
   int seg = NUM_LEDS / 2;
   for (int i = 0; i < NUM_LEDS; i++) {
     int zone = ((i + effectStep) % NUM_LEDS) / seg;
-    leds[i] = (zone == 0) ? winnerColor1 : winnerColor2;
+    ledsTop[i] = (zone == 0) ? winnerColor1 : winnerColor2;
+    ledsBottom[i] = (zone == 0) ? winnerColor1 : winnerColor2;
   }
 
   FastLED.show();
@@ -390,7 +400,8 @@ void effectFlag(unsigned long now){
   for (int i = 0; i < NUM_LEDS; i++){
     int zone = ((i + effectStep) % (numFlagColors * 4)) / 4;
         if (zone >= numFlagColors) zone = numFlagColors - 1;
-        leds[i] = flagColors[zone];
+        ledsTop[i] = flagColors[zone];
+        ledsBottom[i] = flagColors[zone];
   }
 
   FastLED.show();
