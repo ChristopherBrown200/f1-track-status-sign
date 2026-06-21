@@ -27,21 +27,22 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 | Component | Notes |
 |---|---|
 | [ESP32](https://a.co/d/00CtG8Fz) | While Arduino boards could work, most use single-core processors; the ESP32's dual cores allow for the smoothest animation by running api retrieval on the second core.
-| [WS2812B LED strip](https://a.co/d/06bJ6InP) | I used a 48 LED long segment from the 16.4FT 300led Non-Waterproof varient |
+| [WS2812B LED strip](https://a.co/d/06bJ6InP) | I used 2 40 LED long segments from the 16.4FT 300led Non-Waterproof varient |
 | [5V Power Supply](https://a.co/d/0e30fwZi) | |
-| 1mF capacitor |
-| 3D Printed Housing | All of the `.stl` files can be found [here](3D%20Print%20Files/) *(Physical Rework Comming)*
-| [Frosted Acrylic](https://a.co/d/0hzmmOPK) | I cut mine to 159mm x 244mm *(Physical Rework Comming)* |
-| [Protoboard](https://a.co/d/011fvpxh) | I used a 40 x 60mm board|
-| M2 Screws | Used to attach the protoboard to the back *(Physical Rework Comming)*
+| 1mF capacitor | 1 for each strip
+| 3D Printed Housing | All of the `.stl` files can be found [here](3D%20Print%20Files/). I printed to white pannels in Bambu Labs matte white with 100% infill.
+| 3D Printed Track Layouts | All of the `.stl` files can be found [here](3D%20Print%20Files/Tracks) *(Optional)*
+| [Protoboard](https://a.co/d/011fvpxh) | I used a 40 x 60mm board| *(Optional)*
+| Various Wire |
+| M2 Screws |
+| [Heat set M2 Threaded Inserts](https://a.co/d/04uJB6CM) |
 | [LEGO Speed Chapions F1 Car](https://www.lego.com/en-us/product/ferrari-sf-24-f1-race-car-77242) | *Forza Ferrari!*
 
 ### Other Hardware
 | Component | Notes |
 |---|---|
-| Raspberry Pi | Model 3B+ or newer should work (I used a Model 4B) |
+| Raspberry Pi | Model 3B+ or newer should work (I used a Model 4B 2GB) |
 | Micro SD Card | Must be large enough to hold PiOS lite, server.py, & f1auth.json |
-| Ethernet Cable *(Optional)* | Can be used to connect pi to network |
 
 ---
 
@@ -278,4 +279,4 @@ This sign can be assembled as shown in the model of all the parts found [here](h
 - [FastF1](https://github.com/theOehrly/Fast-F1) by Oehrly - F1 live timing client
 - [FastLED](https://github.com/FastLED/FastLED) by Daniel Garcia - LED control library
 - [Flask](https://flask.palletsprojects.com) - lightweight Python web framework
-- [carkingnemke on Thingiverse](https://www.thingiverse.com/thing:7006168) - The original 3d model for the mount that holds the LEGO car
+- [f1-circuits-svg](https://github.com/julesr0y/f1-circuits-svg) by julesr0y - Used to create all of the track print files
