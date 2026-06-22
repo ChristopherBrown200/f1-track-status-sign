@@ -29,20 +29,19 @@ Libraries needed (install via Arduino Library Manager):
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
-#include "soc/rtc_cntl_reg.h"
-
 // == LED Values ==================================================================================
 // LED Hardware Details Constants
-#define LED_PIN     32
-#define NUM_LEDS    48
-#define LED_TYPE    WS2812B
-#define COLOR_ORDER GRB
+#define LED_PIN_TOP     32
+#define LED_PIN_BOTTOM  33
+#define NUM_LEDS        40
+#define LED_TYPE        WS2812B
+#define COLOR_ORDER     GRB
 
 // LED State Array
 CRGB leds[NUM_LEDS];
 
 // Colors Constants
-#define COL_DEFAULT     CRGB(15, 15, 10)
+#define COL_DEFAULT     CRGB(45, 45, 30)
 #define COL_GREEN       CRGB(0, 210, 0)
 #define COL_GREEN_DIM   CRGB(0, 60, 0)
 #define COL_YELLOW      CRGB(255, 200, 0)
@@ -90,10 +89,10 @@ bool     effectToggle     = false;
 
 // == Setup =======================================================================================
 void setup() {
-  // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   Serial.begin(115200);
 
-  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<LED_TYPE, LED_PIN_TOP, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<LED_TYPE, LED_PIN_BOTTOM, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
 
   bootAnimation();
@@ -283,8 +282,7 @@ void runEffect(unsigned long now) {
 
   switch (currentStatus) {
     case 0:
-      fill_solid(leds, NUM_LEDS, COL_DEFAULT);
-      FastLED.show();
+      solidColorEffect(COL_DEFAULT);
       break;
     case 1:
       solidColorEffect(COL_GREEN);
