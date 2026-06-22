@@ -191,10 +191,11 @@ Create a `credentials.h` file in the same folder as the `.ino` file:
 Update the hardware constants at the top of `f1_led_sign.ino` to match your setup:
 
 ```cpp
-#define LED_PIN     32      // GPIO pin connected to LED strip data line
-#define NUM_LEDS    48      // Total number of LEDs in your strip
-#define LED_TYPE    WS2812B // WS2812B | WS2811 | SK6812
-#define COLOR_ORDER GRB     // GRB for most WS2812B strips
+#define LED_PIN_TOP     32      // GPIO pin connected to top LED strip data line
+#define LED_PIN_BOTTOM  33      // GPIO pin connected to bottom LED strip data line
+#define NUM_LEDS        48      // Total number of LEDs in your strip
+#define LED_TYPE        WS2812B // WS2812B | WS2811 | SK6812
+#define COLOR_ORDER     GRB     // GRB for most WS2812B strips
 ```
 
 ### Notes
