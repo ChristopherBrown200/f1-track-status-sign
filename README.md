@@ -3,8 +3,9 @@
 A real-time Formula 1 race status sign that displays the current track status (green flag, yellow flag, safety car, red flag, etc.).
 
 <p align="center">
-  <video src="Media/ExampleCycle.mp4" width="80%" controls>
-</video>
+  <a href="https://youtube.com/watch?v=00ipvBSNEHg">
+    <img src="https://img.youtube.com/vi/00ipvBSNEHg/0.jpg" width="80%">
+  </a>
 </p>
 
 
