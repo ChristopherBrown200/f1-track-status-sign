@@ -32,7 +32,7 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 | [5V Power Supply](https://a.co/d/0e30fwZi) | |
 | 330Ω Resistor | 1 for each strip 
 | 1mF capacitor | 1 for each strip
-| 3D Printed Housing | All of the `.stl` files can be found [here](3D%20Print%20Files/). I printed to white pannels in Bambu Labs matte white with 100% infill.
+| 3D Printed Housing | All of the `.stl` files can be found [here](3D%20Print%20Files/). I printed to white panels in Bambu Labs matte white with 100% infill.
 | 3D Printed Track Layouts | All of the `.stl` files can be found [here](3D%20Print%20Files/Tracks) *(Optional)*
 | [Protoboard](https://a.co/d/011fvpxh) | I used a 40 x 60mm board| *(Optional)*
 | Various Wire |
@@ -69,7 +69,7 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 | `5` | Red flag | Solid red |
 | `6` | VSC Deployed | Pulse yellow |
 | `7` | VSC Ending | Quickly flash yellow |
-| - | Winner | Alternates between: rotating team colour bands & drivers national flag colors (30 mins after session end) |
+| - | Winner | Alternates between: rotating team colour bands & drivers' national flag colors (30 mins after session end) |
 | - | Server unreachable | Ribbon effect - red |
 | - | Connecting to WiFi | Ribbon effect - white |
 
@@ -200,7 +200,7 @@ Update the hardware constants at the top of `f1_led_sign.ino` to match your setu
 - GPIO 34, 35, 36, and 39 are input-only - do not use these for the LED data line
 - The ESP32 runs LED animations on core 1 and HTTP polling on core 0, so animations run uninterrupted during network calls
 - Ensure that `credentials.h` is added to `.gitignore` to keep WiFi credentials private
-- If the sketch is too large to be uplaoded go to **Tools -> Partition Scheme** and select **"Huge APP"**
+- If the sketch is too large to be uploaded, go to **Tools -> Partition Scheme** and select **"Huge APP"**
 
 ---
 
@@ -239,20 +239,20 @@ The server tracks the following stream messages:
 
 ## Sign Assembly
 
-It is recommened that the main part of the sign be cut in your printer's slicer software before priting to avoid large supports for the upper section.
+It is recommended that the main part of the sign be cut in your printer's slicer software before printing to avoid large supports for the upper section.
 
-Once all of the parts are printed assemble as follows:
+Once all of the parts are printed, assemble as follows:
 
-1. Use CA glue to attach the 2 pannels to the main part of the sign housing
-   - Allow propper time for the glue to dry before plaing the car on the lower pannel 
-2. Use a soldering iron to press the threaded insterst into the sign housing
+1. Use CA glue to attach the 2 panels to the main part of the sign housing
+   - Allow proper time for the glue to dry before placing the car on the lower panel 
+2. Use a soldering iron to press the threaded inserts into the sign housing
    - 4 on the bottom and 4 on the back
-3. Use the addhesive backing to attach the LED strips to both sections on the housing
-   - Place the strips so that they are as far from the pannel as possible to acheive the best light defusion 
+3. Use the adhesive backing to attach the LED strips to both sections on the housing
+   - Place the strips so that they are as far from the panel as possible to achieve the best light diffusion 
    - It may be easier to solder wires onto the strips before installing them
 4. Solder the circuit and place it into the rear portion of the housing
-5. Use 8 M2 screws to attach the back bottom pannels to the sign
-6. *(Optional)* Place the next upcomming track layout into its slot on the upper lighting part of the sign
+5. Use 8 M2 screws to attach the back bottom panels to the sign
+6. *(Optional)* Place the next upcoming track layout into its slot on the upper lighting part of the sign
 7. Place LEGO F1 car onto the sign
 
 ---
