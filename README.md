@@ -4,10 +4,10 @@ A real-time Formula 1 race status sign that displays the current track status (g
 
 <p align="center">
   <a href="https://youtube.com/watch?v=00ipvBSNEHg">
-    <img src="https://img.youtube.com/vi/00ipvBSNEHg/0.jpg" width="80%">
+    <img src="https://img.youtube.com/vi/00ipvBSNEHg/maxresdefault.jpg" width="80%">
   </a>
 </p>
-
+> ▶️ Click to See Examples of the Various Statuses
 
 ---
 
