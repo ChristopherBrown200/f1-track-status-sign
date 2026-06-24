@@ -23,6 +23,11 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 3. The **ESP32** polls that endpoint every 10 seconds and updates the LED strip accordingly
 
 ---
+### Smart Integration
+
+For Smart Integration (Alexa, Google Home, etc.) use the [smarthome-connected branch](https://github.com/ChristopherBrown200/f1-track-status-sign/tree/smarthome-connected).
+
+---
 
 ## Hardware Required
 
@@ -71,7 +76,7 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 | `5` | Red flag | Solid red |
 | `6` | VSC Deployed | Pulse yellow |
 | `7` | VSC Ending | Quickly flash yellow |
-| - | Winner | Alternates between: rotating team colour bands & drivers' national flag colors (30 mins after session end) |
+| - | Winner | Alternates between: rotating team color bands & drivers' national flag colors (30 mins after session end) |
 | - | Server unreachable | Ribbon effect - red |
 | - | Connecting to WiFi | Ribbon effect - white |
 
@@ -218,7 +223,7 @@ The server tracks the following stream messages:
 | `SessionStatus` | Detects session start, end, and finalisation |
 | `TrackStatus` | Live flag status (green, yellow, SC, red, etc.) |
 | `SessionInfo` | Session type (Race, Qualifying, Practice, etc.) |
-| `TopThree` | Race/qualifying leader for winner colour display |
+| `TopThree` | Race/qualifying leader for winner color display |
 
 ---
 
@@ -234,7 +239,7 @@ The server tracks the following stream messages:
 **Sign shows server unreachable (red ribbon effect)**
 - The ESP32 cannot reach the Pi - check the Pi IP address in `credentials.h` and that the service is running with `sudo systemctl status f1sign`
 
-**Winner colours not showing after a session**
+**Winner colors not showing after a session**
 - Check `has_top_three` on the health endpoint - if `false` the TopThree data wasn't received
 - Check `session_ended` - if `false` the Finalised message wasn't processed
 
