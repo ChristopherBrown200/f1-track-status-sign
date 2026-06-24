@@ -14,6 +14,7 @@ import os
 import threading
 import time
 import traceback
+import math
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -21,6 +22,11 @@ import fastf1
 from flask import Flask, jsonify
 from waitress import serve
 from fastf1.livetiming.client import SignalRClient
+
+import asyncio
+from sinricpro import SinricPro, SinricProConfig
+from sinricpro.devices import SinricProLight
+from credentials import SINRICPRO_APP_KEY, SINRICPRO_APP_SECRET, SINRICPRO_DEVICE_ID
 
 # == Config =======================================================================================
 BASE_DIR                = Path(__file__).parent
@@ -75,6 +81,8 @@ state = {
     'session_active':   False,
     'winner_color':     None,
     'winner_flag':      None,
+    'smart_on':         True,
+    'smart_color':      None,
 }
 stateLock = threading.Lock()
 winnerSetTime = None
@@ -429,6 +437,8 @@ def status():
             'session_active': state['session_active'],
             'winner_color':   state['winner_color'],
             'winner_flag':    state['winner_flag'],
+            'smart_on':       state['smart_on'],
+            'smart_color':    state['smart_color'],
         })
 
 @app.route('/health')
@@ -455,6 +465,85 @@ def health():
         'winner_flag':           flag,
         'winner_mins_remaining': mins_remaining,
     })
+
+# == Smart Control ================================================================================
+async def on_power_state(state_value: bool):
+    print(f"[Smart] Power state: {state_value}")
+    with stateLock:
+        state['smart_on'] = state_value
+    return True, state_value
+
+async def on_color(r: int, g: int, b: int):
+    hex_color = f"{r:02X}{g:02X}{b:02X}"
+    print(f"[Smart] Color set to #{hex_color}")
+    with stateLock:
+        state['smart_color'] = hex_color
+        state['smart_on'] = True
+    return True
+
+def color_temp_to_rgb(kelvin: int):
+    temp = kelvin / 100.0
+
+    # Red
+    if temp <= 66:
+        r = 255
+    else:
+        r = temp - 60
+        r = 329.698727446 * (r ** -0.1332047592)
+        r = max(0, min(255, int(r)))
+
+    # Green
+    if temp <= 66:
+        g = temp - 2
+        g = 99.4708025861 * math.log(g) - 161.1195681661
+        g = max(0, min(255, int(g)))
+    else:
+        g = temp - 60
+        g = 288.1221695283 * (g ** -0.0755148492)
+        g = max(0, min(255, int(g)))
+
+    # Blue
+    if temp >= 66:
+        b = 255
+    elif temp <= 25:
+        b = 0
+    else:
+        b = temp - 10
+        b = 138.5177312231 * math.log(b) - 305.0447927307
+        b = max(0, min(255, int(b)))
+
+    return r, g, b
+
+async def on_color_temperature(color_temp: int):
+    r, g, b = color_temp_to_rgb(color_temp)
+    hex_color = f"{r:02X}{g:02X}{b:02X}"
+    print(f"[Smart] Color temperature {color_temp}K → #{hex_color}")
+    with stateLock:
+        state['smart_color'] = hex_color
+        state['smart_on'] = True
+    return True
+
+def start_sinricpro():
+    async def run():
+        sinric = SinricPro()
+        config = SinricProConfig(
+            app_key=SINRICPRO_APP_KEY,
+            app_secret=SINRICPRO_APP_SECRET
+        )
+
+        light = SinricProLight(SINRICPRO_DEVICE_ID)
+        light.on_power_state(on_power_state)
+        light.on_color(on_color)
+        light.on_color_temperature(on_color_temperature)
+
+        sinric.add(light)
+        await sinric.begin(config)
+
+        # Keep the event loop running
+        while True:
+            await asyncio.sleep(1)
+
+    asyncio.run(run())
 
 # == Main =========================================================================================
 def main():
@@ -494,8 +583,9 @@ def main():
     sched_thread = threading.Thread(target=schedule_refresh_loop, daemon=True)
     check_thread = threading.Thread(target=sessionCheckLoop, daemon=True)
     watcher = threading.Thread(target=tailAndParse, args=(OUTPUT_FILE,), daemon=True)
-    # flask_thread = threading.Thread(target=lambda: app.run(host='0.0.0.0', port=FLASK_PORT, debug=False), daemon=True)
     flask_thread = threading.Thread(target=lambda: serve(app, host='0.0.0.0', port=FLASK_PORT, threads=4), daemon=True)
+    sinric_thread = threading.Thread(target=start_sinricpro, daemon=True)
+    sinric_thread.start()
 
     sched_thread.start()
     check_thread.start()

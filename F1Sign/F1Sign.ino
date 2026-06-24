@@ -54,6 +54,10 @@ CRGB leds[NUM_LEDS];
 #define BRIGHTNESS          255
 #define RIBBON_EFFECT_WIDTH 7
 
+// LED Smart Color
+bool isOn =       true;
+CRGB smartColor = COL_DEFAULT;
+
 // == Connectivity Constants ======================================================================
 // Wi-Fi Details and Server IP
 #include "credentials.h"
@@ -68,8 +72,8 @@ int  failedPollsCount   = 0;
 
 // Data Server Details
 #define HOST_PORT         5000
-#define POLL_INTERVAL     10000
-#define MAX_FAILED_POLLS  3
+#define POLL_INTERVAL     5000
+#define MAX_FAILED_POLLS  10
 
 // == State Values ================================================================================
 
@@ -111,8 +115,13 @@ void loop() {
     return;
   }
 
-  // Run LED Animations
-  runEffect(millis());
+  if (isOn){
+    // Run LED Animations
+    runEffect(millis());
+  }
+  else{
+    solidColorEffect(CRGB::Black);
+  }
 }
 
 // == WiFi ========================================================================================
@@ -173,6 +182,18 @@ void fetchStatus() {
     if (!deserializeJson(doc, body)) {
       failedPollsCount = 0;
       serverUnreachable = false;
+
+      //Smart Control On/Off
+      isOn = doc["smart_on"].as<bool>();
+
+      // Smart color
+      if (!doc["smart_color"].isNull()) {
+        const char* hex = doc["smart_color"].as<const char*>();
+        smartColor = hexToRgb(hex);
+      }
+      else{
+        smartColor = COL_DEFAULT;
+      }
 
       // If Color Present Start Winner Animation
       if (!doc["winner_color"].isNull()) {
@@ -282,7 +303,7 @@ void runEffect(unsigned long now) {
 
   switch (currentStatus) {
     case 0:
-      solidColorEffect(COL_DEFAULT);
+      solidColorEffect(smartColor);
       break;
     case 1:
       solidColorEffect(COL_GREEN);
