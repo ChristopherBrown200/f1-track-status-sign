@@ -30,7 +30,7 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 | Component | Notes |
 |---|---|
 | [ESP32](https://a.co/d/00CtG8Fz) | While Arduino boards could work, most use single-core processors; the ESP32's dual cores allow for the smoothest animation by running api retrieval on the second core.
-| [WS2812B LED strip](https://a.co/d/06bJ6InP) | I used 2 40 LED long segments from the 16.4FT 300led Non-Waterproof varient |
+| [WS2812B LED strip](https://a.co/d/06bJ6InP) | I used 2 40 LED long segments from the 16.4FT 300led Non-Waterproof variant |
 | [5V Power Supply](https://a.co/d/0e30fwZi) | |
 | 330Ω Resistor | 1 for each strip 
 | 1mF capacitor | 1 for each strip
@@ -41,7 +41,7 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 | M2 Screws |
 | [Heat set M2 Threaded Inserts](https://a.co/d/04uJB6CM) |
 | CA Glue |
-| [LEGO Speed Chapions F1 Car](https://www.lego.com/en-us/product/ferrari-sf-24-f1-race-car-77242) | *Forza Ferrari!*
+| [LEGO Speed Champions F1 Car](https://www.lego.com/en-us/product/ferrari-sf-24-f1-race-car-77242) | *Forza Ferrari!*
 
 ### Other Hardware
 | Component | Notes |
@@ -71,7 +71,7 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 | `5` | Red flag | Solid red |
 | `6` | VSC Deployed | Pulse yellow |
 | `7` | VSC Ending | Quickly flash yellow |
-| - | Winner | Alternates between: rotating team colour bands & drivers' national flag colors (30 mins after session end) |
+| - | Winner | Alternates between: rotating team color bands & drivers' national flag colors (30 mins after session end) |
 | - | Server unreachable | Ribbon effect - red |
 | - | Connecting to WiFi | Ribbon effect - white |
 
@@ -83,6 +83,7 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 - Python 3 with pip
 - An [F1TV](https://www.formula1.com/en-us/subscribe-to-f1-tv) subscription (required for live timing access)
   - This is a part of [Apple TV](https://www.apple.com/apple-tv) in the U.S.
+- Create a [SinricPro](https://sinric.pro/) account
 
 ### Installation
 
@@ -91,7 +92,7 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 mkdir ~/f1sign
 python3 -m venv ~/f1env
 source ~/f1env/bin/activate
-pip install fastf1 flask waitress
+pip install fastf1 flask waitress sinricpro
 ```
 
 **2. Copy `server.py` to the Pi:**
@@ -102,7 +103,7 @@ scp server.py yourUsername@PI_IP:~/f1sign/server.py
 
 **3. Authenticate with F1TV on your main computer:**
 
-Run a FastF1 script (i.e. server.py) on your PC to trigger the browser login. The token is saved at:
+Run a FastF1 script (i.e. server.py *use the version from the main branch*) on your PC to trigger the browser login. The token is saved at:
 - Windows: `%LOCALAPPDATA%\fastf1\fastf1\f1auth.json`
 - Mac/Linux: `~/.local/share/fastf1/f1auth.json`
 
@@ -116,7 +117,27 @@ mkdir -p ~/.local/share/fastf1
 mv ~/f1auth.json ~/.local/share/fastf1/f1auth.json
 ```
 
-**5. Set up as a systemd service:**
+**5. Create a SinricPro Device**
+
+Create a SinricPro Device ([here](https://portal.sinric.pro/device/list)):
+- Use Device Type "Smart Light Bulb"
+
+**6. Add SinricPro Credentials file to the Pi**
+```bash
+nano ~/f1sign/credentials.py
+```
+```ini
+SINRICPRO_APP_KEY    = "your-app-key"
+SINRICPRO_APP_SECRET = "your-app-secret"
+SINRICPRO_DEVICE_ID  = "your-device-id"
+```
+Alternatively you can create the file on your system and copy it to the Pi:
+```bash
+scp credentials.py yourUsername@PI_IP:~/f1sign/credentials.py
+```
+
+
+**7. Set up as a systemd service:**
 ```bash
 sudo nano /etc/systemd/system/f1sign.service
 ```
@@ -145,11 +166,19 @@ sudo systemctl enable f1sign
 sudo systemctl start f1sign
 ```
 
+**6. Add the SinricPro Device to your Smart System**
+- Use the [Sinric Pro Skill for Alexa](https://www.amazon.com/HOME-Sinric-Pro/dp/B07ZT5VDT8)
+- Look for "Sinric Pro" when adding a device on Google Home
+- Integration for IFTT, SmartThings, & Node-RED can be found [here](https://portal.sinric.pro/apiintegrations)
+- HomeKit via Homebridge instructions can be found [here](https://help.sinric.pro/pages/homebridge)
+- Home Assiant can install the SinricPro Integration via HACS
+- SinricPro also has dedicated [Android](https://play.google.com/store/apps/details?id=pro.sinric&pcampaignid=web_share) & [IOS](https://apps.apple.com/us/app/sinric-pro/id1513086098) apps
+
 ### API Endpoints
 
 | Endpoint | Description |
 |---|---|
-| `GET /status` | Current track status for the ESP32 |
+| `GET /status` | Current track status & Smart Settings for the ESP32 |
 | `GET /health` | More detailed server state for debugging |
 
 ### Token Renewal
@@ -218,7 +247,7 @@ The server tracks the following stream messages:
 | `SessionStatus` | Detects session start, end, and finalisation |
 | `TrackStatus` | Live flag status (green, yellow, SC, red, etc.) |
 | `SessionInfo` | Session type (Race, Qualifying, Practice, etc.) |
-| `TopThree` | Race/qualifying leader for winner colour display |
+| `TopThree` | Race/qualifying leader for winner color display |
 
 ---
 
@@ -234,7 +263,7 @@ The server tracks the following stream messages:
 **Sign shows server unreachable (red ribbon effect)**
 - The ESP32 cannot reach the Pi - check the Pi IP address in `credentials.h` and that the service is running with `sudo systemctl status f1sign`
 
-**Winner colours not showing after a session**
+**Winner colors not showing after a session**
 - Check `has_top_three` on the health endpoint - if `false` the TopThree data wasn't received
 - Check `session_ended` - if `false` the Finalised message wasn't processed
 

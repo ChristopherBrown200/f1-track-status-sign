@@ -8,3 +8,9 @@ winner_state.json
 
 # SinricPro credentials
 credentials.py
+
+# vscode
+settings.json
+
+# Python Local
+__pycache__
