@@ -91,7 +91,7 @@ F1 Live Timing Stream → Raspberry Pi (FastF1 + Flask) → WiFi → ESP32 → L
 mkdir ~/f1sign
 python3 -m venv ~/f1env
 source ~/f1env/bin/activate
-pip install fastf1 flask
+pip install fastf1 flask waitress
 ```
 
 **2. Copy `server.py` to the Pi:**
