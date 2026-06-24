@@ -494,7 +494,6 @@ def main():
     sched_thread = threading.Thread(target=schedule_refresh_loop, daemon=True)
     check_thread = threading.Thread(target=sessionCheckLoop, daemon=True)
     watcher = threading.Thread(target=tailAndParse, args=(OUTPUT_FILE,), daemon=True)
-    # flask_thread = threading.Thread(target=lambda: app.run(host='0.0.0.0', port=FLASK_PORT, debug=False), daemon=True)
     flask_thread = threading.Thread(target=lambda: serve(app, host='0.0.0.0', port=FLASK_PORT, threads=4), daemon=True)
 
     sched_thread.start()
