@@ -5,3 +5,9 @@ credentials.h
 f1_stream.txt
 cache
 winner_state.json
+
+# vs code
+settings.json
+
+#python
+__pycache__
