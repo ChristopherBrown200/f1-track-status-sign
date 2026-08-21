@@ -189,7 +189,7 @@ F1TV authentication tokens expire approximately every 4 days. When the token exp
 sudo systemctl restart f1sign
 ```
 ### IP Binding
-In order for the ESP32 to connect to the API, the Pi must have a static IP address on the network. This can typically be done in your router's dashboard under a setting called IP Binding (_it can also be called IP reservation or DHCP reservation*). 
+In order for the ESP32 to connect to the API, the Pi must have a static IP address on the network. This can typically be done in your router's dashboard under a setting called IP Binding (*It can also be called IP reservation or DHCP reservation*). 
 
 > While this feature is common on most consumer routers, some ISP-supplied routers do not support it. In this case, you will have to set a static IP address on the pi itself. (*This can cause potential issues if the router assigns that address to another device while the Pi is disconnected.*)
 
